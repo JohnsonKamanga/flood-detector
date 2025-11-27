@@ -1,0 +1,71 @@
+services:
+  # PostgreSQL Database
+  - type: pserv
+    name: flood-postgres
+    env: docker
+    plan: starter
+    region: oregon
+    dockerfilePath: ./database/Dockerfile
+    envVars:
+      - key: POSTGRES_DB
+        value: flood_prediction
+      - key: POSTGRES_USER
+        value: floodapp
+      - key: POSTGRES_PASSWORD
+        generateValue: true
+      - key: POSTGIS_ENABLE
+        value: "true"
+
+  # Redis
+  - type: redis
+    name: flood-redis
+    plan: starter
+    region: oregon
+    maxmemoryPolicy: noeviction
+
+  # Backend API
+  - type: web
+    name: flood-backend
+    env: docker
+    region: oregon
+    plan: starter
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: flood-postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: flood-redis
+          type: redis
+          property: connectionString
+      - key: USGS_API_BASE_URL
+        value: https://waterservices.usgs.gov/nwis/iv
+      - key: NOAA_API_BASE_URL
+        value: https://api.weather.gov
+      - key: NOAA_API_TOKEN
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: FLASK_ENV
+        value: production
+
+  # Frontend
+  - type: web
+    name: flood-frontend
+    env: docker
+    region: oregon
+    plan: starter
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    envVars:
+      - key: VITE_API_BASE_URL
+        fromService:
+          name: flood-backend
+          type: web
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: VITE_WS_URL
+        value: wss://flood-backend.onrender.com/ws
