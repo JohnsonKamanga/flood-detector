@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, JSON, index
+from sqlalchemy import Column, Integer, String, Float, DateTime, JSON, Index
 from sqlalchemy.sql import func
 from geoalchemy2 import Geometry
 from app.database import Base
@@ -35,11 +35,11 @@ class FloodPrediction(Base):
         Index('idx_prediction_area', 'risk_area', postgresql_using='gist')
     )
 
-class RIskZone(Base):
+class RiskZone(Base):
     __tablename__ = "risk_zones"
 
     id = Column(Integer, primary_key=True, index=True)
-    zone_name = COlumn(String(100), nullable=False)
+    zone_name = Column(String(100), nullable=False)
     geometry = Column(Geometry('MULTIPOLYGON', srid=4326), nullable=False)
     base_risk_level = Column(String(20))
     population_estimation = Column(Integer)

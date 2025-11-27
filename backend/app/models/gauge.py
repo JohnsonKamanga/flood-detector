@@ -1,9 +1,9 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, index
+from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, Index
 from sqlalchemy.sql import func
 from geoalchemy2 import Geometry
 from app.database import Base
 
-class RiverGuage(Base):
+class RiverGauge(Base):
     __tablename__ = "river_gauges"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -30,14 +30,14 @@ class RiverGuage(Base):
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
     
 
-class GuageMeasurement(Base):
-    __tablename__ = "guage_measurements"
+class GaugeMeasurement(Base):
+    __tablename__ = "gauge_measurements"
 
     id = Column(Integer, primary_key=True, index=True)
-    guage_id = Column(Integer, nullable=False, index=True)
+    gauge_id = Column(Integer, nullable=False, index=True)
     timestamp = Column(DateTime(timezone=True), nullable=False, index=True)
     flow_cfs = Column(Float)
-    guage_height_ft = Column(Float)
+    gauge_height_ft = Column(Float)
     precipitation_in = Column(Float)
     temperature_f = Column(Float)
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
