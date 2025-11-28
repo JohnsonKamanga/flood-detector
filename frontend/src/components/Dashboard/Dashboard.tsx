@@ -99,3 +99,43 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
           </header> 
+
+
+      {/* Main Content */}
+        <div className="flex-1 flex overflow-hidden">
+          {/* Sidebar */}
+          <aside className="w-96 bg-white border-r border-gray-200 overflow-y-auto">
+            <div className="p-4 space-y-4">
+                <RiskSummary
+                totalGauges={gauges.length}
+                highRiskCount={highRiskGauges.length}
+                predictions={predictions}
+              />
+
+              {highRiskGauges.length > 0 && (
+                <AlertPanel gauges={highRiskGauges} onGaugeClick={setSelectedGauge} />
+              )}
+
+              <GaugeList
+                gauges={gauges}
+                selectedGauge={selectedGauge}
+                onGaugeSelect={setSelectedGauge}
+              />
+            </div>
+          </aside>
+
+          {/* Map */}
+          <main className="flex-1">
+            <FloodMap
+              gauges={gauges}
+              showHeatmap={showHeatmap}
+              heatmapData={heatmapData}
+              onGaugeClick={setSelectedGauge}
+            />
+          </main>
+        </div>
+      </div>
+    );
+};
+
+export default Dashboard;         
