@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   postgres:
@@ -21,19 +21,6 @@ services:
     networks:
       - flood-network
 
-  redis:
-    image: redis:7-alpine
-    container_name: flood-redis
-    ports:
-      - "6379:6379"
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
-    networks:
-      - flood-network
-
   backend:
     build:
       context: ./backend
@@ -41,7 +28,6 @@ services:
     container_name: flood-backend
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
-      REDIS_URL: redis://redis:6379/0
       USGS_API_BASE_URL: ${USGS_API_BASE_URL}
       NOAA_API_BASE_URL: ${NOAA_API_BASE_URL}
       NOAA_API_TOKEN: ${NOAA_API_TOKEN}
@@ -50,8 +36,6 @@ services:
       PYTHONPATH: /usr/share/qgis/python:/usr/share/qgis/python/plugins
     depends_on:
       postgres:
-        condition: service_healthy
-      redis:
         condition: service_healthy
     ports:
       - "8000:8000"
