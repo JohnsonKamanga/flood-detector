@@ -52,3 +52,63 @@ const GaugeList: React.FC<GaugeListProps> = ({ gauges, selectedGauge, onGaugeSel
           ))}
         </div>
       </div>
+
+      <div className="max-h-96 overflow-y-auto">
+        {filteredGauges.length === 0 ? (
+          <div className="p-4 text-center text-gray-500">No gauges found</div>
+        ) : (
+          <div className="divide-y divide-gray-200">
+            {filteredGauges.map((gauge) => (
+              <button
+                key={gauge.id}
+                onClick={() => onGaugeSelect?.(gauge)}
+                className={`w-full text-left p-4 hover:bg-gray-50 transition ${
+                  selectedGauge?.id === gauge.id ? 'bg-blue-50' : ''
+                }`}
+              >
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <h3 className="font-medium text-gray-900">{gauge.name}</h3>
+                    <p className="text-sm text-gray-500">{gauge.usgs_site_id}</p>
+                  </div>
+                  <span
+                    className={`px-2 py-1 rounded text-xs font-semibold ${getStageColor(
+                      gauge.current_stage
+                    )}`}
+                  >
+                    {gauge.current_stage?.toUpperCase() || 'N/A'}
+                  </span>
+                </div>
+
+                <div className="mt-2 grid grid-cols-2 gap-2 text-sm">
+                  {gauge.current_gauge_height_ft !== null && (
+                    <div>
+                      <span className="text-gray-600">Height:</span>
+                      <span className="ml-1 font-medium">
+                        {gauge.current_gauge_height_ft.toFixed(2)} ft
+                      </span>
+                    </div>
+                  )}
+                  {gauge.current_flow_cfs !== null && (
+                    <div>
+                      <span className="text-gray-600">Flow:</span>
+                      <span className="ml-1 font-medium">
+                        {gauge.current_flow_cfs.toFixed(0)} cfs
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-2 text-xs text-gray-500">
+                  Updated {formatDistanceToNow(new Date(gauge.last_updated), { addSuffix: true })}
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default GaugeList;
