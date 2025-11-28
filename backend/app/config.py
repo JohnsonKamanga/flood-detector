@@ -18,8 +18,6 @@ class Settings(BaseSettings):
     noaa_api_base_url: str = "https://api.weather.gov"
     noaa_api_token: str = "to be changed..."
 
-    #redis
-    redis_url: str = "redis://localhost:6379/0"
 
     #Application 
     log_level: str = "INFO"
