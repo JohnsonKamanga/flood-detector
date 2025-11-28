@@ -13,4 +13,13 @@ export interface GaugeData {
     flood_stage_ft?: number;
     major_flood_stage_ft?: number;
   }
-  
+
+export interface GaugeMeasurement {
+    id: number;
+    timestamp: string;
+    flow_cfs: number | null;
+    gauge_height_ft: number | null;
+    precipitation_in: number | null;
+  }
+
+    
