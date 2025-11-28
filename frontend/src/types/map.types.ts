@@ -14,4 +14,10 @@ export interface MarkerData {
     stage: string | null;
     data: any;
   }
-  
+
+export interface HeatmapLayer {
+    data: number[][];
+    bounds: [[number, number], [number, number]];
+    gradient: Record<number, string>;
+  }
+   
