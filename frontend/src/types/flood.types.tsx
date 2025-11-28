@@ -40,4 +40,29 @@ export interface RiskZone {
     population_estimate: number | null;
     elevation_avg_ft: number | null;
   }
-    
+
+export interface HeatmapData {
+    bounds: {
+      min_lon: number;
+      min_lat: number;
+      max_lon: number;
+      max_lat: number;
+    };
+    resolution: number;
+    heatmap: {
+      longitude: number[];
+      latitude: number[];
+      risk_values: number[][];
+    };
+    gauge_count: number;
+    timestamp: string;
+  }
+  
+export interface WebSocketMessage {
+    type: 'connection' | 'gauge_update' | 'risk_alert' | 'prediction_update' | 'error' | 'pong';
+    status?: string;
+    message?: string;
+    data?: any;
+    severity?: string;
+    timestamp?: string;
+  }  
