@@ -75,4 +75,27 @@ const Dashboard: React.FC = () => {
     const highRiskGauges = gauges.filter(
         (g) => g.current_stage === 'flood' || g.current_stage === 'major'
       );
-    
+      
+      return (
+        <div className="h-screen flex flex-col bg-gray-50">
+          {/* Header */}
+          <header className="bg-blue-600 text-white p-4 shadow-lg">
+            <div className="container mx-auto flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-bold">Urban Flood Prediction System</h1>
+                <p className="text-sm text-blue-100">Real-time monitoring and predictions</p>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <div className={`w-3 h-3 rounded-full ${connected ? 'bg-green-400' : 'bg-red-400'}`}></div>
+                  <span className="text-sm">{connected ? 'Connected' : 'Disconnected'}</span>
+                </div>
+                <button
+                  onClick={() => setShowHeatmap(!showHeatmap)}
+                  className="px-4 py-2 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition"
+                >
+                  {showHeatmap ? 'Hide' : 'Show'} Heatmap
+                </button>
+              </div>
+            </div>
+          </header> 
