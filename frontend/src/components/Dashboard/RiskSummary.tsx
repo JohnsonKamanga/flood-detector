@@ -39,3 +39,25 @@ const RiskSummary: React.FC<RiskSummaryProps> = ({ totalGauges, highRiskCount, p
           <div className="text-sm text-gray-600">High Risk</div>
         </div>
       </div>
+
+      {latestPrediction && (
+        <div className={`p-3 rounded border ${getRiskColor(latestPrediction.risk_level)}`}>
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm font-medium">Current Risk Level</span>
+            <span className="text-xs">
+              Score: {latestPrediction.risk_score.toFixed(1)}
+            </span>
+          </div>
+          <div className="text-2xl font-bold capitalize">{latestPrediction.risk_level}</div>
+          {latestPrediction.confidence && (
+            <div className="text-xs mt-1">
+              Confidence: {(latestPrediction.confidence * 100).toFixed(0)}%
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default RiskSummary;     
