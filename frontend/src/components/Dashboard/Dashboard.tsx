@@ -11,3 +11,19 @@ import type { GaugeData, HeatmapData } from '@/types/flood.types';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import ErrorMessage from '@/components/shared/ErrorMessage';
 
+const Dashboard: React.FC = () => {
+    const { gauges, predictions, loading, error, refetch } = useFloodData();
+    const { connected, onMessage } = useWebSocket();
+    const [selectedGauge, setSelectedGauge] = useState<GaugeData | null>(null);
+    const [showHeatmap, setShowHeatmap] = useState(false);
+    const [heatmapData, setHeatmapData] = useState<HeatmapData | null>(null);
+  
+    // Handle WebSocket updates
+    useEffect(() => {
+      const unsubscribe = onMessage('gauge_update', (data) => {
+        console.log('Gauge update received:', data);
+        refetch();
+      });
+  
+      return unsubscribe;
+    }, [onMessage, refetch]);
