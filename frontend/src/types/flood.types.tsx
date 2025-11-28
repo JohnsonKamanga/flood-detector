@@ -22,4 +22,22 @@ export interface GaugeMeasurement {
     precipitation_in: number | null;
   }
 
+export interface FloodPrediction {
+    id: number;
+    prediction_time: string;
+    valid_time: string;
+    risk_level: 'low' | 'moderate' | 'high' | 'severe';
+    risk_score: number;
+    confidence: number | null;
+    rainfall_forecast_in: number | null;
+    affected_gauges: { gauge_ids: number[] } | null;
+  }
+  
+export interface RiskZone {
+    id: number;
+    zone_name: string;
+    base_risk_level: string;
+    population_estimate: number | null;
+    elevation_avg_ft: number | null;
+  }
     
