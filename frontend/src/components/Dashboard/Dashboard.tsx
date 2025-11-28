@@ -50,4 +50,29 @@ const Dashboard: React.FC = () => {
       }
     };
 
+    useEffect(() => {
+        if (showHeatmap) {
+          loadHeatmap();
+        }
+      }, [showHeatmap, gauges]);
+    
+    if (loading && gauges.length === 0) {
+        return (
+          <div className="flex items-center justify-center h-screen">
+            <LoadingSpinner />
+          </div>
+        );
+      }
+    
+    if (error) {
+        return (
+          <div className="flex items-center justify-center h-screen">
+            <ErrorMessage message={error} onRetry={refetch} />
+          </div>
+        );
+      }
+    
+    const highRiskGauges = gauges.filter(
+        (g) => g.current_stage === 'flood' || g.current_stage === 'major'
+      );
     
