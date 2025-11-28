@@ -6,3 +6,12 @@ export interface MapBounds {
   maxLon: number;
   maxLat: number;
 }
+
+export interface MarkerData {
+    position: LatLngExpression;
+    id: number;
+    name: string;
+    stage: string | null;
+    data: any;
+  }
+  
