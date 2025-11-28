@@ -23,3 +23,19 @@ const RiskSummary: React.FC<RiskSummaryProps> = ({ totalGauges, highRiskCount, p
         return 'bg-green-100 text-green-800 border-green-200';
     }
   };
+
+  return (
+    <div className="bg-white rounded-lg border border-gray-200 p-4">
+      <h2 className="text-lg font-semibold mb-4">System Overview</h2>
+
+      <div className="grid grid-cols-2 gap-4 mb-4">
+        <div className="text-center p-3 bg-blue-50 rounded">
+          <div className="text-3xl font-bold text-blue-600">{totalGauges}</div>
+          <div className="text-sm text-gray-600">Active Gauges</div>
+        </div>
+
+        <div className="text-center p-3 bg-red-50 rounded">
+          <div className="text-3xl font-bold text-red-600">{highRiskCount}</div>
+          <div className="text-sm text-gray-600">High Risk</div>
+        </div>
+      </div>
