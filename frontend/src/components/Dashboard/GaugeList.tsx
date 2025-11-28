@@ -29,4 +29,26 @@ const GaugeList: React.FC<GaugeListProps> = ({ gauges, selectedGauge, onGaugeSel
         return 'text-green-600 bg-green-50';
     }
   };
-  
+
+  return (
+    <div className="bg-white rounded-lg border border-gray-200">
+      <div className="p-4 border-b border-gray-200">
+        <h2 className="text-lg font-semibold mb-3">River Gauges</h2>
+        
+        {/* Filter buttons */}
+        <div className="flex gap-2 flex-wrap">
+          {['all', 'major', 'flood', 'action', 'normal'].map((stage) => (
+            <button
+              key={stage}
+              onClick={() => setFilter(stage)}
+              className={`px-3 py-1 rounded text-sm font-medium transition ${
+                filter === stage
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              {stage.charAt(0).toUpperCase() + stage.slice(1)}
+            </button>
+          ))}
+        </div>
+      </div>
