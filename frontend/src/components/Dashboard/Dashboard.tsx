@@ -27,3 +27,27 @@ const Dashboard: React.FC = () => {
   
       return unsubscribe;
     }, [onMessage, refetch]);
+
+    // Fetch heatmap data
+    const loadHeatmap = async () => {
+      if (gauges.length === 0) return;
+
+      const lats = gauges.map((g) => g.latitude);
+      const lons = gauges.map((g) => g.longitude);
+
+      const minLat = Math.min(...lats);
+      const maxLat = Math.max(...lats);
+      const minLon = Math.min(...lons);
+      const maxLon = Math.max(...lons);
+
+      const bbox = `${minLon},${minLat},${maxLon},${maxLat}`;
+
+      try {
+        const data = await apiService.getRiskHeatmap(bbox);
+        setHeatmapData(data);
+      } catch (err) {
+        console.error('Error loading heatmap:', err);
+      }
+    };
+
+    
