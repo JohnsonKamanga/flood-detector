@@ -52,5 +52,31 @@ class WebSocketService {
 
   private handleMessage(message: WebSocketMessage) {
     const { type, data } = message;
-
     
+    // Emit to listeners
+    const listeners = this.listeners.get(type);
+    if (listeners) {
+      listeners.forEach((callback) => callback(data || message));
+    }
+
+    // Emit to 'all' listeners
+    const allListeners = this.listeners.get('all');
+    if (allListeners) {
+      allListeners.forEach((callback) => callback(message));
+    }
+  }
+
+  private attemptReconnect() {
+    if (this.reconnectAttempts < this.maxReconnectAttempts) {
+      this.reconnectAttempts++;
+      console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})...`);
+      
+      setTimeout(() => {
+        this.connect().catch((error) => {
+          console.error('Reconnection failed:', error);
+        });
+      }, this.reconnectDelay * this.reconnectAttempts);
+    } else {
+      console.error('Max reconnection attempts reached');
+    }
+  }
