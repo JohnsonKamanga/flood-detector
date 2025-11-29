@@ -91,3 +91,48 @@ class ApiService {
     const response = await this.client.post(`/gauges/refresh/${usgs_site_id}`);
     return response.data;
   } 
+
+   // Prediction endpoints
+   async getPredictions(params?: {
+    hours?: number;
+    risk_level?: string;
+  }): Promise<FloodPrediction[]> {
+    const response = await this.client.get<FloodPrediction[]>('/predictions', { params });
+    return response.data;
+  }
+
+  async getLatestPrediction(): Promise<FloodPrediction> {
+    const response = await this.client.get<FloodPrediction>('/predictions/latest');
+    return response.data;
+  }
+
+  async calculateRisk(data: {
+    latitude: number;
+    longitude: number;
+    radius_km?: number;
+  }): Promise<any> {
+    const response = await this.client.post('/predictions/calculate', data);
+    return response.data;
+  }
+
+  async getRiskZones(): Promise<RiskZone[]> {
+    const response = await this.client.get<RiskZone[]>('/predictions/zones');
+    return response.data;
+  }
+
+  async getRiskHeatmap(bbox: string, resolution: number = 50): Promise<HeatmapData> {
+    const response = await this.client.get<HeatmapData>('/predictions/heatmap', {
+      params: { bbox, resolution },
+    });
+    return response.data;
+  }
+
+  // Health check
+  async healthCheck(): Promise<{ status: string }> {
+    const response = await this.client.get('/health');
+    return response.data;
+  }
+}
+
+export const apiService = new ApiService();
+export default apiService; 
