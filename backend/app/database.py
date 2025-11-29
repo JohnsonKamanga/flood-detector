@@ -31,7 +31,10 @@ engine = create_async_engine(
     pool_pre_ping=True,
     pool_size=20,
     max_overflow=40,
-    connect_args={"ssl": "prefer"}
+    connect_args={
+        "ssl": "prefer",
+        "statement_cache_size": 0
+    }
     )
 
     #create session factory
