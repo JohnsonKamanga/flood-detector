@@ -1,4 +1,4 @@
-import { LatLngExpression } from 'leaflet';
+import { type LatLngExpression } from 'leaflet';
 
 export interface MapBounds {
   minLon: number;
