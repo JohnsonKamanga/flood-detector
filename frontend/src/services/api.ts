@@ -14,3 +14,23 @@ class ApiService {
         'Content-Type': 'application/json',
       },
     });
+
+    // Request interceptor
+    this.client.interceptors.request.use(
+      (config) => {
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
+      }
+    );
+
+    // Response interceptor
+    this.client.interceptors.response.use(
+      (response) => response,
+      (error: AxiosError) => {
+        console.error('API Error:', error.response?.data || error.message);
+        return Promise.reject(error);
+      }
+    );
+  }
