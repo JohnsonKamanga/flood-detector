@@ -34,3 +34,60 @@ class ApiService {
       }
     );
   }
+ // Gauge endpoints
+  async getGauges(params?: {
+    lat?: number;
+    lon?: number;
+    radius_km?: number;
+    stage?: string;
+  }): Promise<GaugeData[]> {
+    const response = await this.client.get<GaugeData[]>('/gauges', { params });
+    return response.data;
+  }
+
+  async getGauge(gaugeId: number): Promise<GaugeData> {
+    const response = await this.client.get<GaugeData>(`/gauges/${gaugeId}`);
+    return response.data;
+  }
+
+  async getGaugeMeasurements(gaugeId: number, hours: number = 24): Promise<GaugeMeasurement[]> {
+    const response = await this.client.get<GaugeMeasurement[]>(
+      `/gauges/${gaugeId}/measurements`,
+      { params: { hours } }
+    );
+    return response.data;
+  }
+
+  async refreshGauge(usgs_site_id: string): Promise<any> {
+    const response = await this.client.post(`/gauges/refresh/${usgs_site_id}`);
+    return response.data;
+  }
+
+  // Gauge endpoints
+  async getGauges(params?: {
+    lat?: number;
+    lon?: number;
+    radius_km?: number;
+    stage?: string;
+  }): Promise<GaugeData[]> {
+    const response = await this.client.get<GaugeData[]>('/gauges', { params });
+    return response.data;
+  }
+
+  async getGauge(gaugeId: number): Promise<GaugeData> {
+    const response = await this.client.get<GaugeData>(`/gauges/${gaugeId}`);
+    return response.data;
+  }
+
+  async getGaugeMeasurements(gaugeId: number, hours: number = 24): Promise<GaugeMeasurement[]> {
+    const response = await this.client.get<GaugeMeasurement[]>(
+      `/gauges/${gaugeId}/measurements`,
+      { params: { hours } }
+    );
+    return response.data;
+  }
+
+  async refreshGauge(usgs_site_id: string): Promise<any> {
+    const response = await this.client.post(`/gauges/refresh/${usgs_site_id}`);
+    return response.data;
+  } 
