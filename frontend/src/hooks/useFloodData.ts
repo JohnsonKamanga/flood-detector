@@ -27,3 +27,14 @@ export function useFloodData(refreshInterval: number = 300000) { // 5 minutes
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchData();
+
+    const interval = setInterval(fetchData, refreshInterval);
+
+    return () => clearInterval(interval);
+  }, [refreshInterval]);
+
+  return { gauges, predictions, loading, error, refetch: fetchData };
+}
