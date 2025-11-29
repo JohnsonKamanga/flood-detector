@@ -1,25 +1,6 @@
 version: "3.8"
 
 services:
-  postgres:
-    image: postgis/postgis:15-3.3
-    container_name: flood-postgres
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
-    ports:
-      - "5433:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - flood-network
 
   backend:
     build:
@@ -27,16 +8,18 @@ services:
       dockerfile: Dockerfile
     container_name: flood-backend
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
       USGS_API_BASE_URL: ${USGS_API_BASE_URL}
       NOAA_API_BASE_URL: ${NOAA_API_BASE_URL}
       NOAA_API_TOKEN: ${NOAA_API_TOKEN}
       SECRET_KEY: ${SECRET_KEY}
       QGIS_PREFIX_PATH: /usr
       PYTHONPATH: /usr/share/qgis/python:/usr/share/qgis/python/plugins
-    depends_on:
-      postgres:
-        condition: service_healthy
     ports:
       - "8000:8000"
     volumes:
@@ -61,8 +44,6 @@ services:
       - flood-network
     restart: unless-stopped
 
-volumes:
-  postgres_data:
 
 networks:
   flood-network:
