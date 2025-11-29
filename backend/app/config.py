@@ -1,10 +1,12 @@
 from pydantic_settings import BaseSettings
 from functools import lru_cache
+from typing import Optional
+from pydantic import model_validator
 
 
 class Settings(BaseSettings):
     #database
-    database_url: str
+    database_url: Optional[str] = None
     postgres_host: str = "localhost"
     postgres_port: int = 5432
     postgres_user: str = "postgres"
@@ -27,6 +29,12 @@ class Settings(BaseSettings):
         env_file = (".env", "../.env")
         case_sensitive = False
     
+    @model_validator(mode='after')
+    def compute_database_url(self):
+        if not self.database_url:
+            self.database_url = f"postgresql://{self.postgres_user}:{self.postgres_password}@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
+        return self
+
 @lru_cache
 def get_settings():
     return Settings()
