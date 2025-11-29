@@ -23,3 +23,16 @@ export function useWebSocket() {
       wsService.disconnect();
     };
   }, []);
+
+
+  const subscribe = useCallback((resource: string) => {
+    wsService.subscribe(resource);
+  }, []);
+
+  const onMessage = useCallback((type: string, callback: (data: any) => void) => {
+    wsService.on(type, callback);
+    return () => wsService.off(type, callback);
+  }, []);
+
+  return { connected, lastMessage, subscribe, onMessage };
+}
