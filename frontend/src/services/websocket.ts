@@ -80,3 +80,60 @@ class WebSocketService {
       console.error('Max reconnection attempts reached');
     }
   }
+
+  private startPing() {
+    this.pingInterval = setInterval(() => {
+      if (this.ws?.readyState === WebSocket.OPEN) {
+        this.send({ type: 'ping' });
+      }
+    }, 30000); // Ping every 30 seconds
+  }
+
+  private stopPing() {
+    if (this.pingInterval) {
+      clearInterval(this.pingInterval);
+      this.pingInterval = null;
+    }
+  }
+
+  send(message: any) {
+    if (this.ws?.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify(message));
+    } else {
+      console.warn('WebSocket is not connected');
+    }
+  }
+
+  subscribe(resource: string) {
+    this.send({
+      type: 'subscribe',
+      resource,
+    });
+  }
+
+  on(eventType: string, callback: (data: any) => void) {
+    if (!this.listeners.has(eventType)) {
+      this.listeners.set(eventType, new Set());
+    }
+    this.listeners.get(eventType)!.add(callback);
+  }
+
+  off(eventType: string, callback: (data: any) => void) {
+    const listeners = this.listeners.get(eventType);
+    if (listeners) {
+      listeners.delete(callback);
+    }
+  }
+
+  disconnect() {
+    this.stopPing();
+    if (this.ws) {
+      this.ws.close();
+      this.ws = null;
+    }
+    this.listeners.clear();
+  }
+}
+
+export const wsService = new WebSocketService();
+export default wsService;  
