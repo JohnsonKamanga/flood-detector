@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import FloodMap from '@/components/Map/FloodMap';
+import FloodMap from '@/components/map/FloodMap';
 import AlertPanel from './AlertPanel';
 import GaugeList from './GaugeList';
 import RiskSummary from './RiskSummary';

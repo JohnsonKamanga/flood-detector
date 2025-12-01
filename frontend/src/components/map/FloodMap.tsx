@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import { LatLngBounds } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import GaugeMarker from './GaugeMarker';
+import GaugeMarker from './GuageMarker';
 import RiskHeatmap from './RiskHeatmap';
 import type { GaugeData, HeatmapData } from '@/types/flood.types';
 
