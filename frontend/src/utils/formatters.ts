@@ -89,3 +89,4 @@ export function formatCoordinates(lat: number, lon: number): string {
 export function formatArea(sqmi: number | null): string {
   if (sqmi === null || sqmi === undefined) return 'N/A';
   return `${formatNumber(sqmi, 0)} sq mi`;
+}
