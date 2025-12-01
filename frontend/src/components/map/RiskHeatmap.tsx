@@ -13,7 +13,7 @@ const RiskHeatmap: React.FC<RiskHeatmapProps> = ({ data }) => {
   useEffect(() => {
     if (!data.heatmap.risk_values.length) return;
 
-    const { longitude, latitude, risk_values } = data.heatmap;
+    const { risk_values } = data.heatmap;
     const { min_lon, min_lat, max_lon, max_lat } = data.bounds;
 
     // Create canvas overlay

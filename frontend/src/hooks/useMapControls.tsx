@@ -1,11 +1,11 @@
 import { useState, useCallback } from 'react';
 import { LatLngBounds } from 'leaflet';
 
-interface MapControls {
-  center: [number, number];
-  zoom: number;
-  bounds: LatLngBounds | null;
-}
+// interface MapControls {
+//   center: [number, number];
+//   zoom: number;
+//   bounds: LatLngBounds | null;
+// }
 
 export function useMapControls(
   initialCenter: [number, number] = [38.9072, -77.0369],

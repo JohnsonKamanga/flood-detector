@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import { LatLngBounds } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -73,7 +73,7 @@ const FloodMap: React.FC<FloodMapProps> = ({
       </MapContainer>
 
       {/* Legend */}
-      <div className="absolute bottom-4 right-4 bg-white p-4 rounded-lg shadow-lg z-[1000]">
+      <div className="absolute bottom-4 right-4 bg-white p-4 rounded-lg shadow-lg z-1000">
         <h3 className="font-semibold mb-2">Gauge Status</h3>
         <div className="space-y-1 text-sm">
           <div className="flex items-center gap-2">

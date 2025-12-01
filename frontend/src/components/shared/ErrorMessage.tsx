@@ -76,7 +76,7 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
   return (
     <div className={`rounded-lg border p-4 ${styles.container}`}>
       <div className="flex items-start">
-        <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${styles.icon}`}>
+        <div className={`shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${styles.icon}`}>
           <svg
             className="w-6 h-6"
             fill="none"
@@ -118,7 +118,7 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
         {onDismiss && (
           <button
             onClick={onDismiss}
-            className="flex-shrink-0 ml-3 text-gray-400 hover:text-gray-500"
+            className="shrink-0 ml-3 text-gray-400 hover:text-gray-500"
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
               <path
