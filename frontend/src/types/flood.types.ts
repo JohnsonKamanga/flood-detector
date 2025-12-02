@@ -12,6 +12,7 @@ export interface GaugeData {
     action_stage_ft?: number;
     flood_stage_ft?: number;
     major_flood_stage_ft?: number;
+    drainage_area_sqmi?: number;
   }
 
 export interface GaugeMeasurement {
