@@ -11,7 +11,7 @@ class USGSService:
 
     def __init__(self):
         self.base_url = settings.usgs_api_base_url
-        self.session = Optional[aiohttp.ClientSession] = None
+        self.session: Optional[aiohttp.ClientSession] = None
 
     async def __aenter__(self):
         self.session = aiohttp.ClientSession()
@@ -98,7 +98,7 @@ class USGSService:
                     }
                 
                 for value_obj in values:
-                    timestamp = datetime.fromisoformat(value_obj['dateTime']).replace('Z', '+00:00')
+                    timestamp = datetime.fromisoformat(value_obj['dateTime'].replace('Z', '+00:00'))
                     value = float(value_obj['value'])
 
 

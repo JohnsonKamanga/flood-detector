@@ -5,9 +5,10 @@ import logging
 from contextlib import asynccontextmanager
 
 from app.database import init_db
-from app.routes import gauges, predictions, websocket, historical  # Add historical
+from app.routes import gauges, predictions, websocket, historical
 from app.config import settings
 from app.utils.logger import setup_logging
+from app.tasks.scheduled_tasks import start_scheduler, stop_scheduler
 
 # Setup logging
 setup_logging()
@@ -22,6 +23,10 @@ async def lifespan(app: FastAPI):
     try:
         await init_db()
         logger.info("Database initialized")
+        
+        # Start scheduler
+        start_scheduler()
+        
     except Exception as e:
         logger.error(f"Database initialization failed: {e}")
 
@@ -30,6 +35,7 @@ async def lifespan(app: FastAPI):
     yield
 
     logger.info("Shutting down...")
+    stop_scheduler()
 
 app = FastAPI(
     title="Urban Flood Prediction API",
