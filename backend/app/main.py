@@ -3,7 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import logging
 from contextlib import asynccontextmanager
-from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from app.database import init_db
 from app.routes import gauges, predictions, websocket, historical
@@ -42,9 +41,7 @@ app = FastAPI(
     title="Urban Flood Prediction API",
     version="1.0.0",
     description="Real-time flood prediction and monitoring system",
-    lifespan=lifespan,
-    root_path="",  # Important for Railway
-    redirect_slashes=False  # Disable automatic slash redirects to avoid http:// issue
+    lifespan=lifespan
 )
 
 # CORS Configuration
