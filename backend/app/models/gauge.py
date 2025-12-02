@@ -17,7 +17,7 @@ class RiverGauge(Base):
 
     # current status
     current_flow_cfs = Column(Float)
-    current_guage_height_ft = Column(Float)
+    current_gauge_height_ft = Column(Float)
     current_stage = Column(String(20))
     last_updated = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
 
