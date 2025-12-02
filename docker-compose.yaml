@@ -34,8 +34,9 @@ services:
       dockerfile: Dockerfile
     container_name: flood-frontend
     environment:
-      VITE_API_BASE_URL: http://localhost:8000/api
-      VITE_WS_URL: ws://localhost:8000/ws
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+      VITE_WS_URL: ${VITE_WS_URL}
+      BACKEND_URL: ${BACKEND_URL}
     ports:
       - "80:80"
     depends_on:
