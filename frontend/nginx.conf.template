@@ -1,3 +1,9 @@
+# Trust X-Forwarded-Proto from proxy
+map $http_x_forwarded_proto $forwarded_scheme {
+    default $scheme;
+    https https;
+}
+
 server {
     listen ${PORT};
     server_name localhost;
@@ -5,11 +11,8 @@ server {
     root /usr/share/nginx/html;
     index index.html;
 
-    # Trust X-Forwarded-Proto from proxy
-    map $http_x_forwarded_proto $forwarded_scheme {
-        default $scheme;
-        https https;
-    }
+    # Disable absolute redirects to prevent http:// in Location headers
+    absolute_redirect off;
 
     # Gzip compression
     gzip on;
