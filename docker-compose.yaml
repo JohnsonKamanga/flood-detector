@@ -37,6 +37,7 @@ services:
       VITE_API_BASE_URL: ${VITE_API_BASE_URL}
       VITE_WS_URL: ${VITE_WS_URL}
       BACKEND_URL: ${BACKEND_URL}
+      PORT: ${PORT}
     ports:
       - "80:80"
     depends_on:
