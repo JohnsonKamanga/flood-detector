@@ -1,4 +1,5 @@
-import type { WebSocketMessage } from '@/types/flood.types';
+import type { WebSocketMessage } from "@/types/flood.types";
+import { getRuntimeConfig } from "@/config/runtime";
 
 class WebSocketService {
   private ws: WebSocket | null = null;
@@ -10,7 +11,7 @@ class WebSocketService {
   private pingInterval: NodeJS.Timeout | null = null;
 
   constructor() {
-    this.url = import.meta.env.VITE_WS_URL || 'ws://localhost:8000/ws';
+    this.url = getRuntimeConfig().WS_URL;
   }
 
   connect(): Promise<void> {
@@ -19,7 +20,7 @@ class WebSocketService {
         this.ws = new WebSocket(`${this.url}/flood-updates`);
 
         this.ws.onopen = () => {
-          console.log('WebSocket connected');
+          console.log("WebSocket connected");
           this.reconnectAttempts = 0;
           this.startPing();
           resolve();
@@ -30,17 +31,17 @@ class WebSocketService {
             const message: WebSocketMessage = JSON.parse(event.data);
             this.handleMessage(message);
           } catch (error) {
-            console.error('Error parsing WebSocket message:', error);
+            console.error("Error parsing WebSocket message:", error);
           }
         };
 
         this.ws.onerror = (error) => {
-          console.error('WebSocket error:', error);
+          console.error("WebSocket error:", error);
           reject(error);
         };
 
         this.ws.onclose = () => {
-          console.log('WebSocket disconnected');
+          console.log("WebSocket disconnected");
           this.stopPing();
           this.attemptReconnect();
         };
@@ -52,7 +53,7 @@ class WebSocketService {
 
   private handleMessage(message: WebSocketMessage) {
     const { type, data } = message;
-    
+
     // Emit to listeners
     const listeners = this.listeners.get(type);
     if (listeners) {
@@ -60,7 +61,7 @@ class WebSocketService {
     }
 
     // Emit to 'all' listeners
-    const allListeners = this.listeners.get('all');
+    const allListeners = this.listeners.get("all");
     if (allListeners) {
       allListeners.forEach((callback) => callback(message));
     }
@@ -69,22 +70,24 @@ class WebSocketService {
   private attemptReconnect() {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
-      console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})...`);
-      
+      console.log(
+        `Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})...`
+      );
+
       setTimeout(() => {
         this.connect().catch((error) => {
-          console.error('Reconnection failed:', error);
+          console.error("Reconnection failed:", error);
         });
       }, this.reconnectDelay * this.reconnectAttempts);
     } else {
-      console.error('Max reconnection attempts reached');
+      console.error("Max reconnection attempts reached");
     }
   }
 
   private startPing() {
     this.pingInterval = setInterval(() => {
       if (this.ws?.readyState === WebSocket.OPEN) {
-        this.send({ type: 'ping' });
+        this.send({ type: "ping" });
       }
     }, 30000); // Ping every 30 seconds
   }
@@ -100,13 +103,13 @@ class WebSocketService {
     if (this.ws?.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(message));
     } else {
-      console.warn('WebSocket is not connected');
+      console.warn("WebSocket is not connected");
     }
   }
 
   subscribe(resource: string) {
     this.send({
-      type: 'subscribe',
+      type: "subscribe",
       resource,
     });
   }
@@ -136,4 +139,4 @@ class WebSocketService {
 }
 
 export const wsService = new WebSocketService();
-export default wsService;  
+export default wsService;
