@@ -12,9 +12,12 @@ declare global {
 
 // Get runtime config with fallbacks
 export const getRuntimeConfig = (): RuntimeConfig => {
+  // Determine WebSocket protocol based on page protocol
+  const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+  const defaultWsUrl = `${wsProtocol}//${window.location.host}/ws`;
+
   return {
     API_BASE_URL: window.__RUNTIME_CONFIG__?.API_BASE_URL || "/api",
-    WS_URL:
-      window.__RUNTIME_CONFIG__?.WS_URL || `ws://${window.location.host}/ws`,
+    WS_URL: window.__RUNTIME_CONFIG__?.WS_URL || defaultWsUrl,
   };
 };
