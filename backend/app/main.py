@@ -1,13 +1,12 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import logging
 from contextlib import asynccontextmanager
 
-from app.database import engine, Base
-from app.routes import gauges, predictions, websocket
-from app.services.data_ingestion import DataIngestionService
-from app.tasks.scheduled_tasks import start_scheduler
+from app.database import init_db
+from app.routes import gauges, predictions, websocket, historical  # Add historical
+from app.config import settings
 from app.utils.logger import setup_logging
 
 # Setup logging
@@ -17,29 +16,20 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup and shutdown events"""
-    # Startup
     logger.info("Starting Flood Prediction System...")
-    
-    # GeoPandas check removed (using pure Python implementation)
-    
-    # Create database tables
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    
-    # Start background tasks
-    start_scheduler()
-    
-    # Initialize data ingestion
-    ingestion_service = DataIngestionService()
-    await ingestion_service.start()
-    
+    logger.info(f"Environment: {settings.log_level}")
+
+    try:
+        await init_db()
+        logger.info("Database initialized")
+    except Exception as e:
+        logger.error(f"Database initialization failed: {e}")
+
     logger.info("System startup complete")
-    
+
     yield
-    
-    # Shutdown
+
     logger.info("Shutting down...")
-    await ingestion_service.stop()
 
 app = FastAPI(
     title="Urban Flood Prediction API",
@@ -51,7 +41,7 @@ app = FastAPI(
 # CORS Configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure appropriately for production
+    allow_origins=settings.cors_origins if settings.cors_origins != ['*'] else ["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -60,11 +50,23 @@ app.add_middleware(
 # Include routers
 app.include_router(gauges.router, prefix="/api/gauges", tags=["gauges"])
 app.include_router(predictions.router, prefix="/api/predictions", tags=["predictions"])
+app.include_router(historical.router, prefix="/api/historical", tags=["historical"])  # Add this
 app.include_router(websocket.router, prefix="/ws", tags=["websocket"])
+
+@app.get("/")
+async def root():
+    return {
+        "service": "Flood Prediction API",
+        "version": "1.0.0",
+        "status": "operational"
+    }
 
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy", "service": "flood-prediction-api"}
+    return {
+        "status": "healthy",
+        "service": "flood-prediction-api"
+    }
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):

@@ -9,6 +9,8 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+from sqlalchemy.pool import NullPool
+
 # Handle database URL scheme for asyncpg
 db_url = settings.database_url
 if db_url:
@@ -28,9 +30,7 @@ engine = create_async_engine(
     db_url,
     echo=True,
     future=True,
-    pool_pre_ping=True,
-    pool_size=20,
-    max_overflow=40,
+    poolclass=NullPool,
     connect_args={
         "ssl": "prefer",
         "statement_cache_size": 0
@@ -58,3 +58,9 @@ async def get_db():
             raise
         finally:
             await session.close()
+
+
+async def init_db():
+    """Initialize database tables"""
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)

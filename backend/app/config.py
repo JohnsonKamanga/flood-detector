@@ -1,6 +1,6 @@
 from pydantic_settings import BaseSettings
 from functools import lru_cache
-from typing import Optional
+from typing import Optional, List
 from pydantic import model_validator
 
 
@@ -15,6 +15,7 @@ class Settings(BaseSettings):
 
     api_port: int = 8000
     secret_key: str = "to be changed..."
+    cors_origins: List[str] = ["*"]
 
     usgs_api_base_url: str = "https://waterservices.usgs.gov/nwis/iv"
     noaa_api_base_url: str = "https://api.weather.gov"
