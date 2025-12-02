@@ -98,16 +98,23 @@ async def calculate_current_risk(
         calculator = FloodRiskCalculator()
 
         # Get nearby gauges
-        from geoalchemy2.functions import ST_DWithin, ST_MakePoint
+        from geoalchemy2.functions import ST_DWithin, ST_MakePoint, ST_SetSRID
+        from geoalchemy2 import Geography
+        from sqlalchemy import cast
 
         radius_meters = request.radius_km * 1000
-        point = ST_MakePoint(request.longitude, request.latitude)
+        # Create point with SRID 4326
+        point = ST_SetSRID(ST_MakePoint(request.longitude, request.latitude), 4326)
 
         result = await db.execute(
             select(RiverGauge).where(
                 and_(
                     RiverGauge.is_active == True,
-                    ST_DWithin(RiverGauge.location, point, radius_meters)
+                    ST_DWithin(
+                        cast(RiverGauge.location, Geography),
+                        cast(point, Geography),
+                        radius_meters
+                    )
                 )
             )
         )
@@ -168,7 +175,12 @@ async def calculate_current_risk(
             "timestamp": datetime.utcnow().isoformat()
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error calculating risk: {e}", exc_info=True)
         raise HTTPException(
             status_code=500,
             detail=f"Error calculating risk: {str(e)}"
