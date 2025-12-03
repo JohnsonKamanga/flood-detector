@@ -135,6 +135,79 @@ class ApiService {
     const response = await this.client.get("/health");
     return response.data;
   }
+
+  // Historical flood endpoints
+  async getHistoricalFloods(params?: {
+    skip?: number;
+    limit?: number;
+    severity?: string;
+    start_date?: string;
+    end_date?: string;
+  }): Promise<any[]> {
+    const response = await this.client.get("/historical", { params });
+    return response.data;
+  }
+
+  async getHistoricalFloodById(floodId: number): Promise<any> {
+    const response = await this.client.get(`/historical/${floodId}`);
+    return response.data;
+  }
+
+  async getFloodStatistics(params?: {
+    start_date?: string;
+    end_date?: string;
+  }): Promise<any> {
+    const response = await this.client.get("/historical/statistics", {
+      params,
+    });
+    return response.data;
+  }
+
+  async getFloodsByDecade(): Promise<any> {
+    const response = await this.client.get("/historical/by-decade");
+    return response.data;
+  }
+
+  async getNearbyHistoricalFloods(params: {
+    lat: number;
+    lon: number;
+    radius_km?: number;
+  }): Promise<any[]> {
+    const response = await this.client.get("/historical/location/nearby", {
+      params,
+    });
+    return response.data;
+  }
+
+  async getFloodsByGauge(gaugeId: number): Promise<any[]> {
+    const response = await this.client.get(`/historical/gauge/${gaugeId}`);
+    return response.data;
+  }
+
+  async getFloodImpacts(floodId: number): Promise<any[]> {
+    const response = await this.client.get(`/historical/${floodId}/impacts`);
+    return response.data;
+  }
+
+  async getRecurrenceIntervals(gaugeId: number): Promise<any[]> {
+    const response = await this.client.get(
+      `/historical/gauge/${gaugeId}/recurrence`
+    );
+    return response.data;
+  }
+
+  async calculateReturnPeriod(
+    gaugeId: number,
+    dischargeCfs: number
+  ): Promise<any> {
+    const response = await this.client.get(
+      `/historical/gauge/${gaugeId}/return-period`,
+      {
+        params: { discharge_cfs: dischargeCfs },
+      }
+    );
+    return response.data;
+  }
 }
 
 export const apiService = new ApiService();
