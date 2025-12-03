@@ -53,13 +53,10 @@ class WebSocketService {
   private handleMessage(message: WebSocketMessage) {
     const { type, data } = message;
     
-    // Emit to listeners
     const listeners = this.listeners.get(type);
     if (listeners) {
       listeners.forEach((callback) => callback(data || message));
     }
-
-    // Emit to 'all' listeners
     const allListeners = this.listeners.get('all');
     if (allListeners) {
       allListeners.forEach((callback) => callback(message));
@@ -86,7 +83,7 @@ class WebSocketService {
       if (this.ws?.readyState === WebSocket.OPEN) {
         this.send({ type: 'ping' });
       }
-    }, 30000); // Ping every 30 seconds
+    }, 30000); 
   }
 
   private stopPing() {

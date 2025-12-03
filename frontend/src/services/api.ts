@@ -15,7 +15,6 @@ class ApiService {
       },
     });
 
-    // Request interceptor
     this.client.interceptors.request.use(
       (config) => {
         return config;
@@ -25,7 +24,6 @@ class ApiService {
       }
     );
 
-    // Response interceptor
     this.client.interceptors.response.use(
       (response) => response,
       (error: AxiosError) => {
@@ -34,7 +32,6 @@ class ApiService {
       }
     );
   }
- // Gauge endpoints
   async getGauges(params?: {
     lat?: number;
     lon?: number;
@@ -62,8 +59,6 @@ class ApiService {
     const response = await this.client.post(`/gauges/refresh/${usgs_site_id}`);
     return response.data;
   }
-
-  // Gauge endpoints
   async getGauges(params?: {
     lat?: number;
     lon?: number;
@@ -91,8 +86,6 @@ class ApiService {
     const response = await this.client.post(`/gauges/refresh/${usgs_site_id}`);
     return response.data;
   } 
-
-   // Prediction endpoints
    async getPredictions(params?: {
     hours?: number;
     risk_level?: string;
@@ -126,8 +119,6 @@ class ApiService {
     });
     return response.data;
   }
-
-  // Health check
   async healthCheck(): Promise<{ status: string }> {
     const response = await this.client.get('/health');
     return response.data;

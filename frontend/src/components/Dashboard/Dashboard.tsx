@@ -78,7 +78,7 @@ const Dashboard: React.FC = () => {
       
       return (
         <div className="h-screen flex flex-col bg-gray-50">
-          {/* Header */}
+      
           <header className="bg-blue-600 text-white p-4 shadow-lg">
             <div className="container mx-auto flex items-center justify-between">
               <div>
@@ -101,9 +101,9 @@ const Dashboard: React.FC = () => {
           </header> 
 
 
-      {/* Main Content */}
+      
         <div className="flex-1 flex overflow-hidden">
-          {/* Sidebar */}
+         
           <aside className="w-96 bg-white border-r border-gray-200 overflow-y-auto">
             <div className="p-4 space-y-4">
                 <RiskSummary
@@ -124,7 +124,7 @@ const Dashboard: React.FC = () => {
             </div>
           </aside>
 
-          {/* Map */}
+         
           <main className="flex-1">
             <FloodMap
               gauges={gauges}
