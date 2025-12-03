@@ -361,7 +361,7 @@ docker compose up --build
 
 ## 📚 Next Steps
 
-- Read the [API Documentation](http://localhost:8000/docs)
+- Read the [API Documentation](https://flood-backend-production.up.railway.app/docs)
 - Explore the [Frontend Components](./frontend/src/components)
 - Review [Backend Services](./backend/app/services)
 - Check out the [Roadmap](./README.md#-roadmap)
@@ -369,7 +369,7 @@ docker compose up --build
 ## 🆘 Getting Help
 
 - **Documentation**: Check README.md and code comments
-- **API Docs**: <http://localhost:8000/docs>
+- **API Docs**: <https://flood-backend-production.up.railway.app/docs>
 - **Issues**: Open an issue on GitHub
 - **Logs**: `docker compose logs -f` for real-time logs
 
