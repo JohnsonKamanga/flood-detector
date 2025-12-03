@@ -18,7 +18,6 @@ const Dashboard: React.FC = () => {
     const [showHeatmap, setShowHeatmap] = useState(false);
     const [heatmapData, setHeatmapData] = useState<HeatmapData | null>(null);
   
-    // Handle WebSocket updates
     useEffect(() => {
       const unsubscribe = onMessage('gauge_update', (data) => {
         console.log('Gauge update received:', data);
@@ -28,7 +27,6 @@ const Dashboard: React.FC = () => {
       return unsubscribe;
     }, [onMessage, refetch]);
 
-    // Fetch heatmap data
     const loadHeatmap = async () => {
       if (gauges.length === 0) return;
 
