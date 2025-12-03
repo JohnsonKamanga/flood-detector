@@ -81,7 +81,7 @@ class DataIngestionService:
 
                 # Fetch data from USGS in batches
                 batch_size = 20
-                site_codes = [g.usgs_site_id for g in gauges]
+                site_codes = [g.usgs_site_id for g in gauges if not g.usgs_site_id.startswith('MANUAL_')]
 
                 async with USGSService() as usgs:
                     for i in range(0, len(site_codes), batch_size):

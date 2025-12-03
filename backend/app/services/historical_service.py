@@ -323,7 +323,8 @@ class HistoricalFloodService:
                     'by_severity': {},
                     'total_damage_usd': 0,
                     'total_casualties': 0,
-                    'total_evacuations': 0
+                    'total_evacuations': 0,
+                    'average_damage_per_event': 0
                 }
 
             # Calculate statistics

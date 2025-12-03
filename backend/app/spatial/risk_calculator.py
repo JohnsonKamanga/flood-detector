@@ -1,7 +1,7 @@
 import logging
 import numpy as np
 from typing import Dict, List, Tuple, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from app.spatial.simple_processor import SimpleSpatialProcessor
 
 logger = logging.getLogger(__name__)
@@ -89,7 +89,7 @@ class FloodRiskCalculator:
                 'saturation_risk': round(saturation_risk, 2),
                 'proximity_risk': round(proximity_risk, 2)
             },
-            'timestamp': datetime.utcnow().isoformat()
+            'timestamp': datetime.now(timezone.utc).isoformat()
         }
     
     def _calculate_gauge_risk(self, gauge_data: List[Dict]) -> float:
@@ -100,9 +100,17 @@ class FloodRiskCalculator:
         risk_scores = []
         
         for gauge in gauge_data:
-            current_height = gauge.get('current_gauge_height_ft', 0)
-            flood_stage = gauge.get('flood_stage_ft', 999)
-            action_stage = gauge.get('action_stage_ft', 999)
+            current_height = gauge.get('current_gauge_height_ft')
+            if current_height is None:
+                current_height = 0.0
+                
+            flood_stage = gauge.get('flood_stage_ft')
+            if flood_stage is None:
+                flood_stage = 999.0
+                
+            action_stage = gauge.get('action_stage_ft')
+            if action_stage is None:
+                action_stage = 999.0
             
             if current_height >= flood_stage:
                 score = 100
@@ -125,9 +133,12 @@ class FloodRiskCalculator:
         
         total_rainfall = 0
         for period in periods[:8]:
-            prob = period.get('precipitation_probability', 0) or 0
-            estimated_amount = (prob / 100) * 0.5
-            total_rainfall += estimated_amount
+            if 'precipitation_amount' in period and period['precipitation_amount'] is not None:
+                total_rainfall += period['precipitation_amount']
+            else:
+                prob = period.get('precipitation_probability', 0) or 0
+                estimated_amount = (prob / 100) * 0.1  # Reduced from 0.5 to 0.1 inches per period as a more conservative estimate
+                total_rainfall += estimated_amount
         
         if total_rainfall >= 6:
             return 100
@@ -177,7 +188,7 @@ class FloodRiskCalculator:
             if last_updated:
                 if isinstance(last_updated, str):
                     last_updated = datetime.fromisoformat(last_updated.replace('Z', '+00:00'))
-                age_hours = (datetime.utcnow() - last_updated).total_seconds() / 3600
+                age_hours = (datetime.now(timezone.utc) - last_updated).total_seconds() / 3600
                 if age_hours > 24:
                     confidence *= 0.8
         

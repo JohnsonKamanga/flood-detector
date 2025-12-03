@@ -77,20 +77,28 @@ class FloodPredictorService:
 
         start_time = datetime.utcnow()
 
-        # Prepare gauge data
+        # Prepare gauge data with safe defaults for None values
         gauge_data = [{
-            'current_gauge_height_ft': gauge.current_gauge_height_ft,
-            'flood_stage_ft': gauge.flood_stage_ft,
-            'action_stage_ft': gauge.action_stage_ft,
+            'current_gauge_height_ft': gauge.current_gauge_height_ft or 0.0,
+            'flood_stage_ft': gauge.flood_stage_ft or 20.0,
+            'action_stage_ft': gauge.action_stage_ft or 10.0,
             'last_updated': gauge.last_updated
         }]
 
-        # Get weather forecast
-        async with NOAAService() as noaa:
-            rainfall_forecast = await noaa.get_forecast_by_point(
+        # Get weather forecast (may fail for international locations)
+        rainfall_forecast = None
+        try:
+            # Try NOAA first (US only), fallback to Open-Meteo (global)
+            from app.services.openmeteo_service import get_weather_forecast
+            rainfall_forecast = await get_weather_forecast(
                 gauge.latitude,
-                gauge.longitude
+                gauge.longitude,
+                prefer_noaa=True  # Try NOAA first for US locations
             )
+        except Exception as e:
+            # Both weather sources failed
+            logger.warning(f"Weather forecast unavailable for gauge {gauge.usgs_site_id}: {e}")
+            # Continue with prediction using default/estimated values
 
         # Estimate soil moisture (simplified)
         soil_moisture = 50.0
@@ -98,7 +106,7 @@ class FloodPredictorService:
         # Calculate risk
         risk_assessment = self.risk_calculator.calculate_composite_risk(
             gauge_data=gauge_data,
-            rainfall_forecast=rainfall_forecast,
+            rainfall_forecast=rainfall_forecast or {},  # Empty dict if no forecast
             soil_moisture=soil_moisture
         )
 
@@ -106,8 +114,11 @@ class FloodPredictorService:
         total_rainfall = 0
         if rainfall_forecast and rainfall_forecast.get('periods'):
             for period in rainfall_forecast['periods'][:8]:
-                prob = period.get('precipitation_probability', 0) or 0
-                total_rainfall += (prob / 100) * 0.5
+                if 'precipitation_amount' in period and period['precipitation_amount'] is not None:
+                    total_rainfall += period['precipitation_amount']
+                else:
+                    prob = period.get('precipitation_probability', 0) or 0
+                    total_rainfall += (prob / 100) * 0.1
 
         # Create prediction record
         prediction = FloodPrediction(
@@ -119,7 +130,7 @@ class FloodPredictorService:
             affected_gauges={'gauge_ids': [gauge.id]},
             rainfall_forecast_in=round(total_rainfall, 2),
             soil_saturation_pct=soil_moisture,
-            upstream_flow_cfs=gauge.current_flow_cfs,
+            upstream_flow_cfs=gauge.current_flow_cfs or 0.0,
             model_version='1.0',
             processing_time_ms=(datetime.utcnow() - start_time).total_seconds() * 1000
         )
