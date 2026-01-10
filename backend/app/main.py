@@ -37,12 +37,37 @@ async def lifespan(app: FastAPI):
     logger.info("Shutting down...")
     stop_scheduler()
 
+class ProxyHeadersMiddleware:
+    def __init__(self, app):
+        self.app = app
+    
+    async def __call__(self, scope, receive, send):
+        if scope["type"] == "http":
+            headers = dict(scope.get("headers", []))
+            
+            # Get forwarded proto header
+            forwarded_proto = None
+            for name, value in headers.items():
+                if name == b"x-forwarded-proto":
+                    forwarded_proto = value.decode("latin1")
+                    break
+            
+            # Update scheme if behind proxy
+            if forwarded_proto:
+                scope["scheme"] = forwarded_proto
+        
+        await self.app(scope, receive, send)
+
+
 app = FastAPI(
     title="Urban Flood Prediction API",
     version="1.0.0",
     description="Real-time flood prediction and monitoring system",
-    lifespan=lifespan
+    lifespan=lifespan,
+    redirect_slashes=False  # ADD THIS - prevents 307 redirects
 )
+
+app.add_middleware(ProxyHeadersMiddleware)
 
 # CORS Configuration
 app.add_middleware(
