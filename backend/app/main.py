@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from starlette.middleware.base import BaseHTTPMiddleware  # ADD THIS IMPORT
 import logging
 from contextlib import asynccontextmanager
 
@@ -19,7 +20,7 @@ async def lifespan(app: FastAPI):
     """Startup and shutdown events"""
     logger.info("Starting Flood Prediction System...")
     logger.info(f"Environment: {settings.log_level}")
-
+    
     try:
         await init_db()
         logger.info("Database initialized")
@@ -29,44 +30,34 @@ async def lifespan(app: FastAPI):
         
     except Exception as e:
         logger.error(f"Database initialization failed: {e}")
-
+    
     logger.info("System startup complete")
-
+    
     yield
-
+    
     logger.info("Shutting down...")
     stop_scheduler()
 
-class ProxyHeadersMiddleware:
-    def __init__(self, app):
-        self.app = app
-    
-    async def __call__(self, scope, receive, send):
-        if scope["type"] == "http":
-            headers = dict(scope.get("headers", []))
-            
-            # Get forwarded proto header
-            forwarded_proto = None
-            for name, value in headers.items():
-                if name == b"x-forwarded-proto":
-                    forwarded_proto = value.decode("latin1")
-                    break
-            
-            # Update scheme if behind proxy
-            if forwarded_proto:
-                scope["scheme"] = forwarded_proto
+# REPLACE the ProxyHeadersMiddleware class with this:
+class ProxyHeadersMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        # Trust the X-Forwarded-Proto header from Nginx
+        forwarded_proto = request.headers.get("x-forwarded-proto")
+        if forwarded_proto:
+            request.scope["scheme"] = forwarded_proto
         
-        await self.app(scope, receive, send)
-
+        response = await call_next(request)
+        return response
 
 app = FastAPI(
     title="Urban Flood Prediction API",
     version="1.0.0",
     description="Real-time flood prediction and monitoring system",
     lifespan=lifespan,
-    redirect_slashes=False  # ADD THIS - prevents 307 redirects
+    redirect_slashes=False
 )
 
+# Add proxy headers middleware FIRST
 app.add_middleware(ProxyHeadersMiddleware)
 
 # CORS Configuration
@@ -81,7 +72,7 @@ app.add_middleware(
 # Include routers
 app.include_router(gauges.router, prefix="/api/gauges", tags=["gauges"])
 app.include_router(predictions.router, prefix="/api/predictions", tags=["predictions"])
-app.include_router(historical.router, prefix="/api/historical", tags=["historical"])  # Add this
+app.include_router(historical.router, prefix="/api/historical", tags=["historical"])
 app.include_router(websocket.router, prefix="/ws", tags=["websocket"])
 
 @app.get("/")
