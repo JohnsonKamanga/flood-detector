@@ -42,6 +42,10 @@ async def lifespan(app: FastAPI):
 # ADD THIS NEW MIDDLEWARE CLASS
 class TrailingSlashMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
+        # Skip for websockets
+        if request.scope["type"] == "websocket":
+            return await call_next(request)
+
         # Get the path
         path = request.scope["path"]
         
@@ -87,9 +91,9 @@ app.add_middleware(
 app.include_router(gauges.router, prefix="/api/gauges", tags=["gauges"])
 app.include_router(predictions.router, prefix="/api/predictions", tags=["predictions"])
 app.include_router(historical.router, prefix="/api/historical", tags=["historical"])
-app.include_router(websocket.router, prefix="/ws", tags=["websocket"])
+app.include_router(websocket.router, prefix="/api/ws", tags=["websocket"])
 
-@app.get("/")
+@app.get("/api")
 async def root():
     return {
         "service": "Flood Prediction API",
@@ -97,7 +101,7 @@ async def root():
         "status": "operational"
     }
 
-@app.get("/health")
+@app.get("/api/health")
 async def health_check():
     return {
         "status": "healthy",
