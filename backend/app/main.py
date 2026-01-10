@@ -1,7 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from starlette.middleware.base import BaseHTTPMiddleware  # ADD THIS IMPORT
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import Response
 import logging
 from contextlib import asynccontextmanager
 
@@ -38,7 +39,19 @@ async def lifespan(app: FastAPI):
     logger.info("Shutting down...")
     stop_scheduler()
 
-# REPLACE the ProxyHeadersMiddleware class with this:
+# ADD THIS NEW MIDDLEWARE CLASS
+class TrailingSlashMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        # Get the path
+        path = request.scope["path"]
+        
+        # If path ends with / and is not root, remove it
+        if path != "/" and path.endswith("/"):
+            request.scope["path"] = path.rstrip("/")
+        
+        response = await call_next(request)
+        return response
+
 class ProxyHeadersMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
         # Trust the X-Forwarded-Proto header from Nginx
@@ -57,7 +70,8 @@ app = FastAPI(
     redirect_slashes=False
 )
 
-# Add proxy headers middleware FIRST
+# Add middlewares in order (IMPORTANT: Order matters!)
+app.add_middleware(TrailingSlashMiddleware)  # ADD THIS FIRST
 app.add_middleware(ProxyHeadersMiddleware)
 
 # CORS Configuration

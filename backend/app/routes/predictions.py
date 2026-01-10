@@ -42,7 +42,7 @@ class CurrentRiskRequest(BaseModel):
     longitude: float
     radius_km: float = 10.0
 
-@router.get("/", response_model=List[PredictionResponse])
+@router.get("", response_model=List[PredictionResponse])
 async def get_predictions(
     hours: int = Query(24, description="Hours of predictions to retrieve"),
     risk_level: Optional[str] = Query(None, description="Filter by risk level"),

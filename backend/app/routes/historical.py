@@ -108,7 +108,7 @@ class RecurrenceIntervalResponse(BaseModel):
 
 # Routes
 
-@router.get("/", response_model=List[HistoricalFloodResponse])
+@router.get("", response_model=List[HistoricalFloodResponse])
 async def get_historical_floods(
     skip: int = Query(0, ge=0, description="Number of records to skip"),
     limit: int = Query(100, ge=1, le=500, description="Maximum records to return"),
@@ -168,7 +168,7 @@ async def get_flood_by_id(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/", response_model=HistoricalFloodResponse, status_code=201)
+@router.post("", response_model=HistoricalFloodResponse, status_code=201)
 async def create_flood(
     flood_data: HistoricalFloodCreate,
     db: AsyncSession = Depends(get_db)

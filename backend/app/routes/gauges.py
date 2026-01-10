@@ -37,7 +37,7 @@ class MeasurementResponse(BaseModel):
     class Config:
         from_attributes = True
 
-@router.get("/", response_model=List[GaugeResponse])
+@router.get("", response_model=List[GaugeResponse])
 async def get_gauges(
     lat: Optional[float] = Query(None, description="Latitude for proximity search"),
     lon: Optional[float] = Query(None, description="Longitude for proximity search"),
