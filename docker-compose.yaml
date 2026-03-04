@@ -39,7 +39,7 @@ services:
       BACKEND_URL: ${BACKEND_URL}
       PORT: ${PORT}
     ports:
-      - "80:80"
+      - "5173:80"
     depends_on:
       - backend
     networks:
